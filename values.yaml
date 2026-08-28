@@ -1,0 +1,67 @@
+# Zarf package-value defaults. Override these at deployment with:
+#   --values deploy-values.example.yaml
+# or individual settings with:
+#   --set-values terraria.serverSettings.maxplayers=12
+
+# The schema keeps serverType and image synchronized. Override this entire block
+# to select vanilla; see deploy-values.vanilla.yaml.
+runtime:
+  serverType: tshock
+  image:
+    repository: ghcr.io/jbmay/terraria-tshock
+    tag: 6.1.0-build.2
+    pullPolicy: IfNotPresent
+
+terraria:
+  tty: false
+  stdin: false
+  service:
+    type: NodePort
+    port: 7777
+    # Leave null to let Kubernetes allocate a NodePort.
+    nodePort: null
+    annotations: {}
+  serverSettings:
+    # Must match the imported filename without the .wld suffix.
+    worldname: Example
+    worldsize: large
+    difficulty: master
+    maxplayers: 8
+    secure: 1
+    language: en-US
+    npcstream: 60
+    priority: 1
+  extraServerSettings: {}
+  tshockSettings:
+    ServerName: Example
+    UseServerName: true
+    ServerPassword: ""
+    RequireLogin: false
+    MaxSlots: 8
+
+storage:
+  # Set existingClaim to reuse a PVC instead of creating one.
+  existingClaim: ""
+  accessMode: ReadWriteOnce
+  size: 1Gi
+  # Empty uses the cluster's default StorageClass. Use "-" for no class.
+  storageClass: ""
+
+worldImport:
+  # These fields are populated by the deploy action when WORLD_PATH is set.
+  enabled: false
+  image:
+    reference: ""
+    pullPolicy: Always
+  # The generated scratch image places the contents of WORLD_PATH at its root.
+  sourcePath: /
+  # False preserves matching paths already present in the PVC.
+  overwrite: false
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: "2"
+    memory: 2Gi

@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/defenseunicorns/maru-runner/v0.6.0/tasks.schema.json
+
+variables:
+  - name: ARCHITECTURE
+    default: amd64
+  - name: BUILD_DIR
+    default: build
+
+tasks:
+  - name: default
+    description: Build the Terraria Zarf package
+    actions:
+      - task: build
+
+  - name: build
+    description: Build the Terraria Zarf package in the ignored artifact directory
+    actions:
+      - task: clean
+      - cmd: mkdir -p "${BUILD_DIR}"
+        description: Create the artifact directory
+      - cmd: >-
+          zarf package create .
+          --architecture "${ARCHITECTURE}"
+          --features values=true
+          --output "${BUILD_DIR}"
+          --confirm
+        description: Create the Zarf package
+
+  - name: clean
+    description: Remove generated package artifacts
+    actions:
+      - cmd: |
+          case "${BUILD_DIR}" in
+            ""|"/"|".")
+              echo "Refusing to remove unsafe build directory: ${BUILD_DIR}" >&2
+              exit 1
+              ;;
+          esac
+          rm -rf -- "${BUILD_DIR}"
+        description: Remove the artifact directory

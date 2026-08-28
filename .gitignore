@@ -1,0 +1,7 @@
+/build/
+/world-image.tar
+/tshock-image.tar
+/terraria-*.tgz
+/zarf-package-*.tar.zst
+/zarf-package-*.part*.tar.zst
+/deploy-values.local.yaml

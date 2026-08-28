@@ -1,0 +1,24 @@
+# Copy this file before adding passwords or environment-specific settings.
+runtime:
+  serverType: tshock
+  image:
+    repository: ghcr.io/jbmay/terraria-tshock
+    tag: 6.1.0-build.2
+    pullPolicy: IfNotPresent
+terraria:
+  service:
+    # Set a fixed port if desired; null asks Kubernetes to allocate one.
+    nodePort: 30777
+  serverSettings:
+    worldname: Example
+    maxplayers: 8
+  tshockSettings:
+    ServerName: Example
+    ServerPassword: ""
+storage:
+  size: 1Gi
+  storageClass: ""
+worldImport:
+  # WORLD_PATH controls whether this is enabled; see the deploy command in the
+  # README. These settings control how the generated image is imported.
+  overwrite: false

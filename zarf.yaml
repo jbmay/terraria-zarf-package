@@ -1,0 +1,93 @@
+kind: ZarfPackageConfig
+
+metadata:
+  name: terraria
+  description: Deploy Terraria with an optional Dockerless import of local world data.
+  version: 1.4.5.6
+
+variables:
+  - name: WORLD_PATH
+    description: Optional absolute path to a local directory containing one or more Terraria .wld files.
+    default: ""
+    prompt: false
+
+values:
+  files:
+    - values.yaml
+  schema: values.schema.json
+
+components:
+  - name: world-oci-builder
+    description: Installs the Dockerless helper used to create a world OCI image at deployment time.
+    required: true
+    files:
+      - source: scripts/build-world-oci.sh
+        target: /tmp/terraria-zarf-build-world-oci.sh
+        executable: true
+
+  - name: terraria
+    description: Terraria vanilla or TShock server with optional local world import.
+    required: true
+
+    charts:
+      - name: terraria
+        releaseName: terraria
+        version: 0.9.1
+        namespace: terraria
+        url: oci://ghcr.io/jbmay/helm-charts/terraria
+        valuesFiles:
+          - helm-values.yaml
+        values:
+          - sourcePath: .runtime.serverType
+            targetPath: .serverType
+          - sourcePath: .runtime.image
+            targetPath: .image
+          - sourcePath: .terraria
+            targetPath: .terraria
+          - sourcePath: .storage
+            targetPath: .persistence.worlds
+          - sourcePath: .worldImport.enabled
+            targetPath: .worldImport.enabled
+          - sourcePath: .worldImport.image
+            targetPath: .worldImport.image
+          - sourcePath: .worldImport.sourcePath
+            targetPath: .worldImport.sourcePath
+          - sourcePath: .worldImport.overwrite
+            targetPath: .worldImport.overwrite
+          - sourcePath: .resources
+            targetPath: .resources
+
+    # Zarf downloads these at package creation and mirrors them into the Zarf
+    # registry at deployment. They are not downloaded by the Terraria pod.
+    images:
+      - ghcr.io/jbmay/terraria-tshock:6.1.0-build.2
+      - ghcr.io/jbmay/terraria-vanilla:1.4.5.6-build.1
+      - docker.io/library/busybox:1.36
+
+    actions:
+      onDeploy:
+        before:
+          - cmd: /tmp/terraria-zarf-build-world-oci.sh ./zarf "${ZARF_VAR_WORLD_PATH}"
+            description: Build and push the optional world OCI image without Docker
+            setVariables:
+              - name: WORLD_IMAGE_REFERENCE
+          - cmd: |
+              if [ -n "${ZARF_VAR_WORLD_IMAGE_REFERENCE}" ]; then
+                printf '%s\n' true
+              else
+                printf '%s\n' false
+              fi
+            description: Configure whether the chart imports a world image
+            setValues:
+              - key: .worldImport.enabled
+                type: yaml
+          - cmd: printf '%s\n' "${ZARF_VAR_WORLD_IMAGE_REFERENCE}"
+            description: Configure the generated world image reference
+            setValues:
+              - key: .worldImport.image.reference
+
+    healthChecks:
+      - name: terraria
+        namespace: terraria
+        apiVersion: apps/v1
+        kind: Deployment

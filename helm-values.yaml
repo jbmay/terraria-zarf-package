@@ -1,0 +1,19 @@
+# Values fixed when the Zarf package is created. Runtime selection and normal
+# deployment configuration are mapped from Zarf package values in zarf.yaml.
+# Image references here must stay in sync with zarf.yaml so the Zarf agent can
+# rewrite them to its local registry.
+
+worldImport:
+  copier:
+    image: busybox:1.36
+    pullPolicy: IfNotPresent
+
+persistence:
+  worlds:
+    enabled: true
+
+# The generated world image is pushed directly to Zarf's internal registry.
+# In registry-proxy mode the namespace is intentionally excluded from agent
+# mutation, so explicitly attach the pull credentials Zarf creates for it.
+imagePullSecrets:
+  - name: private-registry
