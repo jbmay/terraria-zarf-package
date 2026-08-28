@@ -8,46 +8,14 @@ cluster's Zarf registry, and import it into a new or existing PVC.
 
 ## Prerequisites
 
-- Zarf 0.74.1 or newer
-- A cluster initialized with Zarf 0.70 or newer
+- The latest Zarf release
+- A cluster initialized with Zarf
 - Kubernetes 1.31 or newer with the `ImageVolume` feature enabled; image
   volumes are generally available in Kubernetes 1.35
 - For optional import, an absolute local path containing at least one `.wld`
   file
 
-## Create the package
-
-From this directory, use the Maru build task:
-
-```sh
-maru run build
-```
-
-The package is written beneath the ignored `build/` directory. Remove all
-generated package artifacts with:
-
-```sh
-maru run clean
-```
-
-Set a different package architecture when needed with `--set
-ARCHITECTURE=arm64`.
-
-Zarf 0.74 treats package values as an alpha feature, so `--features
-values=true` is required on commands that read or apply them. Zarf pulls chart
-version `0.9.1` from `oci://ghcr.io/jbmay/helm-charts/terraria`. The TShock,
-vanilla, and BusyBox runtime images are pulled from their registries and
-embedded directly by Zarf. Package creation does not read or include local
-world data and does not require Docker.
-
-Pull requests build the package as a CI artifact. Merges to `main` build it
-again and publish the deployable OCI package to:
-
-```text
-oci://ghcr.io/jbmay/zarf-packages/terraria:1.4.5.6-amd64
-```
-
-## Deploy
+## Deploy the published package
 
 Review and copy `deploy-values.example.yaml` before adding a password or other
 environment-specific configuration. Deploy without a world import by omitting
@@ -55,8 +23,8 @@ environment-specific configuration. Deploy without a world import by omitting
 
 ```sh
 cp deploy-values.example.yaml deploy-values.local.yaml
-zarf package deploy build/zarf-package-terraria-amd64-1.4.5.6.tar.zst \
-  --features values=true \
+zarf package deploy \
+  oci://ghcr.io/jbmay/zarf-packages/terraria:1.4.5.6-amd64 \
   --values deploy-values.local.yaml \
   --confirm
 ```
@@ -66,8 +34,8 @@ uses Zarf's embedded archiver and registry client to create and push a minimal
 scratch OCI image; Docker, Podman, and Buildah are not used:
 
 ```sh
-zarf package deploy build/zarf-package-terraria-amd64-1.4.5.6.tar.zst \
-  --features values=true \
+zarf package deploy \
+  oci://ghcr.io/jbmay/zarf-packages/terraria:1.4.5.6-amd64 \
   --values deploy-values.local.yaml \
   --set-variables WORLD_PATH=/absolute/path/to/Worlds \
   --confirm
@@ -83,8 +51,8 @@ registry-proxy mode.
 Individual non-secret settings can also be overridden without a file:
 
 ```sh
-zarf package deploy build/zarf-package-terraria-amd64-1.4.5.6.tar.zst \
-  --features values=true \
+zarf package deploy \
+  oci://ghcr.io/jbmay/zarf-packages/terraria:1.4.5.6-amd64 \
   --set-values terraria.serverSettings.maxplayers=12 \
   --confirm
 ```
@@ -93,8 +61,8 @@ Choose the runtime using the provided vanilla override. Zarf includes both
 images, and the values schema prevents mismatched server types and images:
 
 ```sh
-zarf package deploy build/zarf-package-terraria-amd64-1.4.5.6.tar.zst \
-  --features values=true \
+zarf package deploy \
+  oci://ghcr.io/jbmay/zarf-packages/terraria:1.4.5.6-amd64 \
   --values deploy-values.local.yaml \
   --values deploy-values.vanilla.yaml \
   --confirm
@@ -116,3 +84,28 @@ The default world name is `Example`, matching `Example.wld`. On a non-empty PVC,
 the importer preserves existing files unless `worldImport.overwrite` is set to
 `true`. Changed world data produces a new content-derived tag automatically;
 the publishable Zarf package does not need to be rebuilt.
+
+## Build locally (optional)
+
+Building locally is only necessary when developing or testing package changes.
+From this directory, use the Maru build task:
+
+```sh
+maru run build
+```
+
+The package is written beneath the ignored `build/` directory. Remove all
+generated package artifacts with:
+
+```sh
+maru run clean
+```
+
+Set a different package architecture when needed with `--set
+ARCHITECTURE=arm64`. Zarf pulls chart version `0.9.1` from
+`oci://ghcr.io/jbmay/helm-charts/terraria`; the TShock, vanilla, and BusyBox
+runtime images are embedded directly in the resulting package. Package creation
+does not read or include local world data and does not require Docker.
+
+Pull requests build the package as a CI artifact. Merges to `main` build it
+again and publish the deployable OCI package used by the commands above.

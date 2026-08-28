@@ -21,7 +21,6 @@ tasks:
       - cmd: >-
           zarf package create .
           --architecture "${ARCHITECTURE}"
-          --features values=true
           --output "${BUILD_DIR}"
           --confirm
         description: Create the Zarf package
