@@ -1,10 +1,11 @@
 # Terraria Zarf package
 
-This package is versioned with Terraria `1.4.5.6`. The publishable package
-contains the Terraria chart plus the TShock and vanilla runtime images, but no
-world data. At deployment it can optionally turn a local directory into a
-minimal OCI image using Zarf's embedded tools, push that image directly to the
-cluster's Zarf registry, and import it into a new or existing PVC.
+Package versions combine the Terraria version with a package build tag. The
+current package version is `1.4.5.6-build.1`. The publishable package contains
+the Terraria chart plus the TShock and vanilla runtime images, but no world
+data. At deployment it can optionally turn a local directory into a minimal
+OCI image using Zarf's embedded tools, push that image directly to the cluster's
+Zarf registry, and import it into a new or existing PVC.
 
 ## Prerequisites
 
@@ -24,7 +25,7 @@ environment-specific configuration. Deploy without a world import by omitting
 ```sh
 cp deploy-values.example.yaml deploy-values.local.yaml
 zarf package deploy \
-  oci://ghcr.io/jbmay/zarf-packages/terraria:1.4.5.6-amd64 \
+  oci://ghcr.io/jbmay/zarf-packages/terraria:1.4.5.6-build.1 \
   --values deploy-values.local.yaml \
   --confirm
 ```
@@ -35,7 +36,7 @@ scratch OCI image; Docker, Podman, and Buildah are not used:
 
 ```sh
 zarf package deploy \
-  oci://ghcr.io/jbmay/zarf-packages/terraria:1.4.5.6-amd64 \
+  oci://ghcr.io/jbmay/zarf-packages/terraria:1.4.5.6-build.1 \
   --values deploy-values.local.yaml \
   --set-variables WORLD_PATH=/absolute/path/to/Worlds \
   --confirm
@@ -52,7 +53,7 @@ Individual non-secret settings can also be overridden without a file:
 
 ```sh
 zarf package deploy \
-  oci://ghcr.io/jbmay/zarf-packages/terraria:1.4.5.6-amd64 \
+  oci://ghcr.io/jbmay/zarf-packages/terraria:1.4.5.6-build.1 \
   --set-values terraria.serverSettings.maxplayers=12 \
   --confirm
 ```
@@ -62,7 +63,7 @@ images, and the values schema prevents mismatched server types and images:
 
 ```sh
 zarf package deploy \
-  oci://ghcr.io/jbmay/zarf-packages/terraria:1.4.5.6-amd64 \
+  oci://ghcr.io/jbmay/zarf-packages/terraria:1.4.5.6-build.1 \
   --values deploy-values.local.yaml \
   --values deploy-values.vanilla.yaml \
   --confirm
@@ -108,4 +109,7 @@ runtime images are embedded directly in the resulting package. Package creation
 does not read or include local world data and does not require Docker.
 
 Pull requests build the package as a CI artifact. Merges to `main` build it
-again and publish the deployable OCI package used by the commands above.
+again and publish the deployable OCI package used by the commands above. The
+publish workflow skips the build when that exact package version already exists
+in GHCR. Increment the `build.N` suffix in `zarf.yaml` before merging changes
+that should produce a new package for the same Terraria version.

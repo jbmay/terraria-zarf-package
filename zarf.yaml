@@ -3,7 +3,7 @@ kind: ZarfPackageConfig
 metadata:
   name: terraria
   description: Deploy Terraria with an optional Dockerless import of local world data.
-  version: 1.4.5.6
+  version: 1.4.5.6-build.1
 
 variables:
   - name: WORLD_PATH
