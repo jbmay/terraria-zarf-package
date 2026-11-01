@@ -7,6 +7,29 @@ data. At deployment it can optionally turn a local directory into a minimal
 OCI image using Zarf's embedded tools, push that image directly to the cluster's
 Zarf registry, and import it into a new or existing PVC.
 
+## Automated image updates
+
+Enable the Renovate GitHub App for this repository to use `renovate.json`.
+Renovate opens grouped image-update PRs for vanilla and TShock, updating the
+Zarf image list, default and example values, and matching image-tag schema
+constraints together. Custom version ordering includes the `build.N` suffix,
+so image rebuilds are detected even when the game version has not changed.
+Local deploy values and world data are not scanned; automerge is disabled.
+
+Review compatibility between TShock and vanilla before merging. Renovate uses
+the vanilla image's game version to update the package prefix in `zarf.yaml`
+and README references, preserving the package's independent `build.N` suffix.
+TShock's version is not a Terraria game version, so it does not control that
+prefix. When only an image build or
+TShock changes, manually increment the package's `build.N` and README package
+references before merging so CI can publish a fresh package.
+CI builds PRs, and publication skips package versions already in GHCR. Update
+any image overrides in your own local deploy values after reviewing the PR.
+
+BusyBox is intentionally held at `1.36`: the published chart hardcodes that
+image in init containers. Update the chart before changing the bundled BusyBox
+image, otherwise the package may lack images required at deployment.
+
 ## Prerequisites
 
 - The latest Zarf release
