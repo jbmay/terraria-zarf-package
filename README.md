@@ -7,6 +7,25 @@ data. At deployment it can optionally turn a local directory into a minimal
 OCI image using Zarf's embedded tools, push that image directly to the cluster's
 Zarf registry, and import it into a new or existing PVC.
 
+## Prerequisites
+
+### Deployment
+
+- The latest Zarf release
+- A cluster initialized with Zarf
+- Kubernetes 1.31 or newer with the `ImageVolume` feature enabled; image
+  volumes are generally available in Kubernetes 1.35
+- For optional import, an absolute local path containing at least one `.wld`
+  file
+
+### Local builds (optional)
+
+- The latest Zarf release
+- Maru
+
+Maru is only required to build the package locally. Deploying the published
+package does not require a local build.
+
 ## Automated image updates
 
 Renovate opens grouped image-update PRs for vanilla and TShock, updating the
@@ -28,15 +47,6 @@ any image overrides in your own local deploy values after reviewing the PR.
 BusyBox is intentionally held at `1.36`: the published chart hardcodes that
 image in init containers. The chart needs updated before changing the bundled BusyBox
 image, otherwise the package may lack images required at deployment.
-
-## Prerequisites
-
-- The latest Zarf release
-- A cluster initialized with Zarf
-- Kubernetes 1.31 or newer with the `ImageVolume` feature enabled; image
-  volumes are generally available in Kubernetes 1.35
-- For optional import, an absolute local path containing at least one `.wld`
-  file
 
 ## Deploy the published package
 
