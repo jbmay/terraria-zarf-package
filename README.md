@@ -9,7 +9,6 @@ Zarf registry, and import it into a new or existing PVC.
 
 ## Automated image updates
 
-Enable the Renovate GitHub App for this repository to use `renovate.json`.
 Renovate opens grouped image-update PRs for vanilla and TShock, updating the
 Zarf image list, default and example values, and matching image-tag schema
 constraints together. Custom version ordering includes the `build.N` suffix,
@@ -27,7 +26,7 @@ CI builds PRs, and publication skips package versions already in GHCR. Update
 any image overrides in your own local deploy values after reviewing the PR.
 
 BusyBox is intentionally held at `1.36`: the published chart hardcodes that
-image in init containers. Update the chart before changing the bundled BusyBox
+image in init containers. The chart needs updated before changing the bundled BusyBox
 image, otherwise the package may lack images required at deployment.
 
 ## Prerequisites
