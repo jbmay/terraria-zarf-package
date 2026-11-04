@@ -4,5 +4,5 @@ runtime:
   serverType: vanilla
   image:
     repository: ghcr.io/jbmay/terraria-vanilla
-    tag: 1.4.5.6-build.1
+    tag: 1.4.5.8-build.1
     pullPolicy: IfNotPresent

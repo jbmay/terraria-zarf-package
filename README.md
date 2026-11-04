@@ -1,7 +1,7 @@
 # Terraria Zarf package
 
 Package versions combine the Terraria version with a package build tag. The
-current package version is `1.4.5.6-build.1`. The publishable package contains
+current package version is `1.4.5.8-build.1`. The publishable package contains
 the Terraria chart plus the TShock and vanilla runtime images, but no world
 data. At deployment it can optionally turn a local directory into a minimal
 OCI image using Zarf's embedded tools, push that image directly to the cluster's
@@ -57,7 +57,7 @@ environment-specific configuration. Deploy without a world import by omitting
 ```sh
 cp deploy-values.example.yaml deploy-values.local.yaml
 zarf package deploy \
-  oci://ghcr.io/jbmay/zarf-packages/terraria:1.4.5.6-build.1 \
+  oci://ghcr.io/jbmay/zarf-packages/terraria:1.4.5.8-build.1 \
   --values deploy-values.local.yaml \
   --confirm
 ```
@@ -68,7 +68,7 @@ scratch OCI image; Docker, Podman, and Buildah are not used:
 
 ```sh
 zarf package deploy \
-  oci://ghcr.io/jbmay/zarf-packages/terraria:1.4.5.6-build.1 \
+  oci://ghcr.io/jbmay/zarf-packages/terraria:1.4.5.8-build.1 \
   --values deploy-values.local.yaml \
   --set-variables WORLD_PATH=/absolute/path/to/Worlds \
   --confirm
@@ -85,7 +85,7 @@ Individual non-secret settings can also be overridden without a file:
 
 ```sh
 zarf package deploy \
-  oci://ghcr.io/jbmay/zarf-packages/terraria:1.4.5.6-build.1 \
+  oci://ghcr.io/jbmay/zarf-packages/terraria:1.4.5.8-build.1 \
   --set-values terraria.serverSettings.maxplayers=12 \
   --confirm
 ```
@@ -95,7 +95,7 @@ images, and the values schema prevents mismatched server types and images:
 
 ```sh
 zarf package deploy \
-  oci://ghcr.io/jbmay/zarf-packages/terraria:1.4.5.6-build.1 \
+  oci://ghcr.io/jbmay/zarf-packages/terraria:1.4.5.8-build.1 \
   --values deploy-values.local.yaml \
   --values deploy-values.vanilla.yaml \
   --confirm

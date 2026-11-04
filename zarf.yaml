@@ -3,7 +3,7 @@ kind: ZarfPackageConfig
 metadata:
   name: terraria
   description: Deploy Terraria with an optional Dockerless import of local world data.
-  version: 1.4.5.6-build.1
+  version: 1.4.5.8-build.1
 
 variables:
   - name: WORLD_PATH
@@ -61,7 +61,7 @@ components:
     # registry at deployment. They are not downloaded by the Terraria pod.
     images:
       - ghcr.io/jbmay/terraria-tshock:6.1.0-build.2
-      - ghcr.io/jbmay/terraria-vanilla:1.4.5.6-build.1
+      - ghcr.io/jbmay/terraria-vanilla:1.4.5.8-build.1
       - docker.io/library/busybox:1.36
 
     actions:
