@@ -46,7 +46,7 @@
             "image": {
               "properties": {
                 "repository": { "const": "ghcr.io/jbmay/terraria-vanilla" },
-                "tag": { "const": "1.4.5.6-build.1" }
+                "tag": { "const": "1.4.5.8-build.1" }
               }
             }
           }
